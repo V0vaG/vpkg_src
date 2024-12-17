@@ -18,8 +18,9 @@ def welcome():
     user_folder = os.path.join(UPLOAD_FOLDER, user_ip)
     artifact_file = os.path.join(user_folder, ARTIFACT_FILE_NAME)
     files_info = []
+    folder_exists = os.path.exists(user_folder)  # Check if the folder exists
 
-    if os.path.exists(user_folder):
+    if folder_exists:
         for file_name in os.listdir(user_folder):
             file_path = os.path.join(user_folder, file_name)
             if os.path.isfile(file_path) and file_name != os.path.basename(SCRIPT_PATH):
@@ -27,7 +28,9 @@ def welcome():
                 if info:
                     files_info.append(info)
 
-    return render_template('welcome.html', files=files_info, artifact_exists=os.path.exists(artifact_file))
+    return render_template('welcome.html', files=files_info, 
+                           artifact_exists=os.path.exists(artifact_file), 
+                           folder_exists=folder_exists)
 
 # Route for File Upload
 @app.route('/upload', methods=['POST'])
