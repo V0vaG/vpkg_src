@@ -141,8 +141,8 @@ def get_file_type(extension):
     file_types = {
         'sh': 'bash',
         'py': 'python',
-        'txt': 'text',
-        'js': 'javascript'
+        'c': 'c'
+        
     }
     return file_types.get(extension, 'unknown')
 
