@@ -65,11 +65,11 @@ def generate_artifact():
         return jsonify({'message': 'No files uploaded yet to generate artifact'}), 400
 
     # Copy the script to the user folder
-    local_script_path = os.path.join(user_folder, os.path.basename(SCRIPT_PATH))
-    shutil.copy(SCRIPT_PATH, local_script_path)
-
     local_fix_path = os.path.join(user_folder, os.path.basename(FIX_PATH))
     shutil.copy(FIX_PATH, local_fix_path)
+
+    local_script_path = os.path.join(user_folder, os.path.basename(SCRIPT_PATH))
+    shutil.copy(SCRIPT_PATH, local_script_path)
 
     # Set execution permissions for the script
     os.chmod(local_script_path, 0o755)
