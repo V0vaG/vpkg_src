@@ -60,7 +60,7 @@ EXE='bin'
 GUI=0
 AUTO_LANCH=1
 AUTO_REMOVE=0
-create_info_file=1
+create_info_file=0
 
 skip_c_syntax=0
 skip_sh_syntax=0
