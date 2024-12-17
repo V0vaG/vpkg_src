@@ -15,8 +15,6 @@ FIX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fix_path.sh
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-absolute_script_path = os.path.abspath(local_script_path)
-
 # Route for the Welcome Page
 @app.route('/')
 def welcome():
@@ -26,6 +24,8 @@ def welcome():
     files_info = []
     folder_exists = os.path.exists(user_folder)  # Check if the folder exists
 
+
+
     if folder_exists:
         for file_name in os.listdir(user_folder):
             file_path = os.path.join(user_folder, file_name)
@@ -33,6 +33,8 @@ def welcome():
                 info = parse_file_info(file_name)
                 if info:
                     files_info.append(info)
+
+
 
     return render_template('welcome.html', files=files_info, 
                            artifact_exists=os.path.exists(artifact_file), 
@@ -54,6 +56,27 @@ def upload_file():
         os.makedirs(user_folder, exist_ok=True)
         file_path = os.path.join(user_folder, file.filename)
         file.save(file_path)
+
+        local_fix_path = os.path.join(user_folder, os.path.basename(FIX_PATH))
+        shutil.copy(FIX_PATH, local_fix_path)
+
+        local_script_path = os.path.join(user_folder, os.path.basename(SCRIPT_PATH))
+        shutil.copy(SCRIPT_PATH, local_script_path)
+
+        os.chmod(local_script_path, 0o755)
+        os.chmod(local_fix_path, 0o755)
+        
+        absolute_fix_path = os.path.abspath(local_fix_path)
+        fix_command = ["bash", absolute_fix_path]
+
+        absolute_script_path = os.path.abspath(local_script_path)
+
+        subprocess.run(fix_command, check=True, cwd=user_folder)
+
+        command = ["bash", absolute_script_path, "-v"] 
+
+        subprocess.run(command, check=True, cwd=user_folder)
+
         return jsonify({'message': f'File {file.filename} uploaded successfully'}), 200
 
 # Route to Run the Script
@@ -67,15 +90,15 @@ def generate_artifact():
         return jsonify({'message': 'No files uploaded yet to generate artifact'}), 400
 
     # Copy the script to the user folder
-    local_fix_path = os.path.join(user_folder, os.path.basename(FIX_PATH))
-    shutil.copy(FIX_PATH, local_fix_path)
+    # local_fix_path = os.path.join(user_folder, os.path.basename(FIX_PATH))
+    # shutil.copy(FIX_PATH, local_fix_path)
 
     local_script_path = os.path.join(user_folder, os.path.basename(SCRIPT_PATH))
-    shutil.copy(SCRIPT_PATH, local_script_path)
+    # shutil.copy(SCRIPT_PATH, local_script_path)
 
     # Set execution permissions for the script
-    os.chmod(local_script_path, 0o755)
-    os.chmod(local_fix_path, 0o755)
+    # os.chmod(local_script_path, 0o755)
+    # os.chmod(local_fix_path, 0o755)
 
 
     # Collect all file names (no paths), excluding the script itself
@@ -86,14 +109,14 @@ def generate_artifact():
 
     try:
         # Use absolute path for the script
-        
-        absolute_fix_path = os.path.abspath(local_fix_path)
-        fix_command = ["bash", absolute_fix_path]
+        absolute_script_path = os.path.abspath(local_script_path)
+        # absolute_fix_path = os.path.abspath(local_fix_path)
+        # fix_command = ["bash", absolute_fix_path]
         command = ["bash", absolute_script_path] + uploaded_files
         print(f"Executing command: {' '.join(command)}")  # Debugging output
         
         # Run the script in the user folder
-        subprocess.run(fix_command, check=True, cwd=user_folder)
+        # subprocess.run(fix_command, check=True, cwd=user_folder)
         subprocess.run(command, check=True, cwd=user_folder)
         return jsonify({'message': 'Artifact generated successfully'}), 200
     except subprocess.CalledProcessError as e:
