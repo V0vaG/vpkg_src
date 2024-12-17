@@ -29,9 +29,18 @@ NOCOLOR='\e[0m'
 
 file_test="${RED}FAIL${NOCOLOR}"
 info_test="${RED}FAIL${NOCOLOR}"
-FILES_PATH=~/script_files
+FILES_PATH=@@PATH@@
 conf_file="$FILES_PATH/$alias.conf"
 info_file="./$alias.info"
+
+
+
+source $conf_file
+source $info_file
+echo -e "Import config file... $file_test"
+echo -e "Import info file..... $info_test"
+sleep 0.5
+
 
 
 if [[ ! -d $FILES_PATH ]]; then
@@ -51,7 +60,7 @@ EXE='bin'
 GUI=0
 AUTO_LANCH=1
 AUTO_REMOVE=0
-create_info_file=0
+create_info_file=1
 
 skip_c_syntax=0
 skip_sh_syntax=0
@@ -76,12 +85,6 @@ info_test="${GREEN}OK${NOCOLOR}"
 
 EOF1
 fi
-
-
-source $conf_file
-source $info_file
-echo -e "Import config file... $file_test"
-echo -e "Import info file..... $info_test"
 
 v_pkg_version=$version
 TMP_SCRIPT_PATH='/tmp/tmp.app'

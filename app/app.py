@@ -11,6 +11,7 @@ alias = "vpkg"
 HOME_DIR = os.path.expanduser("~")
 UPLOAD_FOLDER = os.path.join(HOME_DIR, "script_files", alias)
 SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vpkg_3.3.6.sh')
+FIX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fix_path.sh')
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -67,11 +68,16 @@ def generate_artifact():
     local_script_path = os.path.join(user_folder, os.path.basename(SCRIPT_PATH))
     shutil.copy(SCRIPT_PATH, local_script_path)
 
+    local_fix_path = os.path.join(user_folder, os.path.basename(FIX_PATH))
+    shutil.copy(FIX_PATH, local_fix_path)
+
     # Set execution permissions for the script
     os.chmod(local_script_path, 0o755)
+    os.chmod(local_fix_path, 0o755)
+
 
     # Collect all file names (no paths), excluding the script itself
-    uploaded_files = [f for f in os.listdir(user_folder) if os.path.isfile(os.path.join(user_folder, f)) and f != os.path.basename(SCRIPT_PATH)]
+    uploaded_files = [f for f in os.listdir(user_folder) if os.path.isfile(os.path.join(user_folder, f)) and f != os.path.basename(SCRIPT_PATH) and f != os.path.basename(FIX_PATH)]
 
     if not uploaded_files:
         return jsonify({'message': 'No files found to process'}), 400
@@ -79,10 +85,13 @@ def generate_artifact():
     try:
         # Use absolute path for the script
         absolute_script_path = os.path.abspath(local_script_path)
+        absolute_fix_path = os.path.abspath(local_fix_path)
+        fix_command = ["bash", absolute_fix_path]
         command = ["bash", absolute_script_path] + uploaded_files
         print(f"Executing command: {' '.join(command)}")  # Debugging output
         
         # Run the script in the user folder
+        subprocess.run(fix_command, check=True, cwd=user_folder)
         subprocess.run(command, check=True, cwd=user_folder)
         return jsonify({'message': 'Artifact generated successfully'}), 200
     except subprocess.CalledProcessError as e:
