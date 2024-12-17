@@ -15,6 +15,8 @@ FIX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fix_path.sh
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+absolute_script_path = os.path.abspath(local_script_path)
+
 # Route for the Welcome Page
 @app.route('/')
 def welcome():
@@ -84,7 +86,7 @@ def generate_artifact():
 
     try:
         # Use absolute path for the script
-        absolute_script_path = os.path.abspath(local_script_path)
+        
         absolute_fix_path = os.path.abspath(local_fix_path)
         fix_command = ["bash", absolute_fix_path]
         command = ["bash", absolute_script_path] + uploaded_files
