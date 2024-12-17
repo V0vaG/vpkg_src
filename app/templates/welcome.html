@@ -172,44 +172,50 @@
         const generateBtn = document.getElementById('generate-btn');
         const downloadBtn = document.getElementById('download-btn');
         const deleteFolderBtn = document.getElementById('delete-folder-btn');
-
+    
         ['dragenter', 'dragover'].forEach(eventName => {
             dropArea.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 dropArea.classList.add('highlight');
             }, false);
         });
-
+    
         ['dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, () => {
                 dropArea.classList.remove('highlight');
             }, false);
         });
-
+    
         dropArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            const files = e.dataTransfer.files;
-            uploadFile(files[0]);
+            const files = e.dataTransfer.files; // Get all dropped files
+            uploadFiles(files);
         });
-
-        function uploadFile(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                location.reload();
-            })
-            .catch(() => {
-                alert('File upload failed.');
-            });
+    
+        function uploadFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const formData = new FormData();
+                formData.append('file', file);
+    
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`File ${file.name}:`, data.message);
+                    if (i === files.length - 1) {
+                        alert('All files uploaded successfully');
+                        location.reload();
+                    }
+                })
+                .catch(() => {
+                    alert(`File ${file.name} upload failed.`);
+                });
+            }
         }
-
+    
         // Generate artifact button
         generateBtn?.addEventListener('click', () => {
             fetch('/generate', { method: 'POST' })
@@ -220,12 +226,12 @@
                 })
                 .catch(() => alert('Failed to generate artifact.'));
         });
-
+    
         // Download artifact button
         downloadBtn?.addEventListener('click', () => {
             window.location.href = '/download_artifact';
         });
-
+    
         // Delete folder button
         deleteFolderBtn?.addEventListener('click', () => {
             if (confirm('Are you sure you want to delete your folder? This action cannot be undone.')) {
@@ -238,6 +244,6 @@
                     .catch(() => alert('Failed to delete folder.'));
             }
         });
-    </script>
+    </script>    
 </body>
 </html>
