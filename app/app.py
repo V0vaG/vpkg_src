@@ -6,7 +6,9 @@ import subprocess
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'
+alias = "vpkg"
+# UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join(HOME_DIR, "script_files", alias)
 SCRIPT_PATH = os.path.abspath('./vpkg_3.3.6.sh')  # Absolute path to the Bash script
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
