@@ -10,7 +10,7 @@ alias = "vpkg"
 # UPLOAD_FOLDER = 'uploads'
 HOME_DIR = os.path.expanduser("~")
 UPLOAD_FOLDER = os.path.join(HOME_DIR, "script_files", alias)
-SCRIPT_PATH = os.path.abspath('./vpkg_3.3.6.sh')  # Absolute path to the Bash script
+SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vpkg_3.3.6.sh')
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
