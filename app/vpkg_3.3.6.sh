@@ -34,15 +34,6 @@ conf_file="$FILES_PATH/$alias.conf"
 info_file="./$alias.info"
 
 
-
-source $conf_file
-source $info_file
-echo -e "Import config file... $file_test"
-echo -e "Import info file..... $info_test"
-sleep 0.5
-
-
-
 if [[ ! -d $FILES_PATH ]]; then
 	echo "Creating dir $FILES_PATH"
 	mkdir $FILES_PATH
@@ -85,6 +76,12 @@ info_test="${GREEN}OK${NOCOLOR}"
 
 EOF1
 fi
+
+
+source $conf_file
+source $info_file
+echo -e "Import config file... $file_test"
+echo -e "Import info file..... $info_test"
 
 v_pkg_version=$version
 TMP_SCRIPT_PATH='/tmp/tmp.app'
