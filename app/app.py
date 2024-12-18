@@ -231,6 +231,5 @@ def get_file_type(extension):
     return file_types.get(extension, 'unknown')
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
