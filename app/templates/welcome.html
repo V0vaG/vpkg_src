@@ -123,6 +123,76 @@
         </ul>
     </div>
 
+    <div class="container">
+        <h2>Configuration Options</h2>
+        <form id="config-form">
+            <label>
+                <input type="checkbox" id="GUI" /> GUI
+            </label><br />
+            <label>
+                <input type="checkbox" id="AUTO_LANCH" /> AUTO_LANCH
+            </label><br />
+            <label>
+                <input type="checkbox" id="AUTO_REMOVE" /> AUTO_REMOVE
+            </label><br />
+            <label>
+                <input type="checkbox" id="create_info_file" /> Create Info File
+            </label><br />
+            <label>
+                <input type="checkbox" id="skip_c_syntax" /> Skip C Syntax
+            </label><br />
+            <label>
+                <input type="checkbox" id="skip_sh_syntax" /> Skip SH Syntax
+            </label><br />
+            <label>
+                <input type="checkbox" id="skip_py_syntax" /> Skip PY Syntax
+            </label><br />
+            <label>
+                <input type="checkbox" id="binary" /> Binary
+            </label><br />
+            <label>
+                <input type="checkbox" id="encrypt_script" /> Encrypt Script
+            </label><br />
+            <label>
+                <input type="checkbox" id="encrypt_file" /> Encrypt File
+            </label><br />
+            <button type="button" id="save-config-btn">Save Configuration</button>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/config')
+                .then(response => response.json())
+                .then(config => {
+                    for (const [key, value] of Object.entries(config)) {
+                        const checkbox = document.getElementById(key);
+                        if (checkbox) {
+                            checkbox.checked = value === '1';
+                        }
+                    }
+                })
+                .catch(() => alert('Failed to load configuration.'));
+    
+            document.getElementById('save-config-btn').addEventListener('click', () => {
+                const config = {};
+                document.querySelectorAll('#config-form input[type="checkbox"]').forEach(checkbox => {
+                    config[checkbox.id] = checkbox.checked ? '1' : '0';
+                });
+    
+                fetch('/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                })
+                    .then(response => response.json())
+                    .then(data => alert(data.message))
+                    .catch(() => alert('Failed to save configuration.'));
+            });
+        });
+    </script>
+    
+
     <!-- File Upload Section -->
     <div class="container">
         <h2>File Upload Area</h2>

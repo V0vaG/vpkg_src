@@ -15,6 +15,56 @@ FIX_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fix_path.sh
 ARTIFACT_FILE_NAME = 'artifact.sh'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
+# Route to get and update configuration file
+@app.route('/config', methods=['GET', 'POST'])
+def config():
+    user_ip = request.remote_addr.replace('.', '_')
+    user_folder = os.path.join(UPLOAD_FOLDER, user_ip)
+    config_path = os.path.join(user_folder, 'vpkg.conf')
+
+    if not os.path.exists(config_path):
+        return jsonify({'message': 'Configuration file not found'}), 404
+
+    if request.method == 'GET':
+        # Read the config file
+        with open(config_path, 'r') as file:
+            lines = file.readlines()
+
+        # Parse the configuration into key-value pairs
+        config = {}
+        for line in lines:
+            if '=' in line:
+                key, value = line.split('=', 1)
+                config[key.strip()] = value.strip()
+
+        return jsonify(config), 200
+
+    if request.method == 'POST':
+        # Get the updated configuration from the request
+        new_config = request.json
+
+        # Read and update the config file
+        with open(config_path, 'r') as file:
+            lines = file.readlines()
+
+        updated_lines = []
+        for line in lines:
+            if '=' in line:
+                key, _ = line.split('=', 1)
+                if key.strip() in new_config:
+                    updated_lines.append(f"{key}={new_config[key.strip()]}")
+                else:
+                    updated_lines.append(line.strip())
+            else:
+                updated_lines.append(line.strip())
+
+        with open(config_path, 'w') as file:
+            file.write('\n'.join(updated_lines) + '\n')
+
+        return jsonify({'message': 'Configuration updated successfully'}), 200
+
+
 # Route for the Welcome Page
 @app.route('/')
 def welcome():
@@ -179,6 +229,8 @@ def get_file_type(extension):
         
     }
     return file_types.get(extension, 'unknown')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
