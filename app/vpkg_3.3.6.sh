@@ -69,6 +69,7 @@ skip_py_syntax=1
 binary=0
 encrypt_script=0
 encrypt_file=0
+pass=0
 
 agent_ip='10.10.10.10'
 agent_user='user'
